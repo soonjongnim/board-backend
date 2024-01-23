@@ -32,6 +32,16 @@ dependencies {
 	implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'  /* Log4JDBC */
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
 	implementation 'com.github.iamport:iamport-rest-client-java:0.2.21' /* 아임포트 결제관련 */
+	// https://mvnrepository.com/artifact/com.oracle.oci.sdk/oci-java-sdk-common-httpclient-jersey
+	implementation group: 'com.oracle.oci.sdk', name: 'oci-java-sdk-common-httpclient-jersey', version: '3.31.1'
+	// https://mvnrepository.com/artifact/com.oracle.oci.sdk/oci-java-sdk-audit
+	implementation group: 'com.oracle.oci.sdk', name: 'oci-java-sdk-audit', version: '3.31.1'	
+	// https://mvnrepository.com/artifact/com.oracle.oci.sdk/oci-java-sdk-core
+	implementation group: 'com.oracle.oci.sdk', name: 'oci-java-sdk-core', version: '3.31.1'
+	// https://mvnrepository.com/artifact/com.oracle.oci.sdk/oci-java-sdk-database
+	implementation group: 'com.oracle.oci.sdk', name: 'oci-java-sdk-database', version: '3.31.1'
+	// https://mvnrepository.com/artifact/com.oracle.oci.sdk/oci-java-sdk-objectstorage
+	implementation group: 'com.oracle.oci.sdk', name: 'oci-java-sdk-objectstorage', version: '3.31.1'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.mysql:mysql-connector-j'

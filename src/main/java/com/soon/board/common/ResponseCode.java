@@ -13,6 +13,7 @@ public interface ResponseCode {
 	String DUPLICATE_TEL_NUMBER = "DT";
 	String NOT_EXISTED_USER = "NU";
 	String NOT_EXISTED_BOARD = "NB";
+	String NOT_EXISTED_IMAGES = "NI";
 	
 	// HTTP Status 401
 	String SIGN_IN_FAIL = "SF";

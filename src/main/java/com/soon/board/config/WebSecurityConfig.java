@@ -38,7 +38,7 @@ public class WebSecurityConfig {
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				// "/", "/api/auth/**" 모듈에 대해서는 모두 허용 (인증을 하지 않고 사용 가능하게 함)
 				.authorizeRequests()
-				.antMatchers("/", "/api/auth/**", "/api/search/**", "/file/**", "/oauth/callback", "/api/payment/**")
+				.antMatchers("/", "/api/auth/**", "/api/search/**", "/api/file/**", "/oauth/callback", "/api/payment/**")
 				.permitAll().antMatchers(HttpMethod.GET, "/api/board/**", "/api/user/**").permitAll()
 				// 나머지 Request에 대해서는 모두 인증된 사용자만 사용가능하게 함
 				.anyRequest().authenticated().and().exceptionHandling()

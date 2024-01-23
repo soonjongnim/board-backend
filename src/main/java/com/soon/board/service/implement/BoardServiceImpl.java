@@ -45,6 +45,7 @@ import com.soon.board.repository.resultSet.GetBoardResultSet;
 import com.soon.board.repository.resultSet.GetCommentListResultSet;
 import com.soon.board.repository.resultSet.GetFavoriteListResultSet;
 import com.soon.board.service.BoardService;
+import com.soon.board.service.FileService;
 
 @Service
 public class BoardServiceImpl implements BoardService {
@@ -56,6 +57,7 @@ public class BoardServiceImpl implements BoardService {
 	@Autowired FavoriteRepository favoriteRepository;
 	@Autowired SearchLogRepository searchLogRepository;
 	@Autowired BoardListViewRepository boardListViewRepository;
+	@Autowired FileService fileService;
 	
 	@Override
 	public ResponseEntity<? super GetBoardResponseDto> getBoard(Integer boardNumber) {
@@ -321,6 +323,7 @@ public class BoardServiceImpl implements BoardService {
 			boolean isWriter = writerEmail.equals(email);
 			if (!isWriter) return DeleteBoardResponseDto.noPermission();
 			
+			fileService.cloudDelete(boardNumber, email);
 			imageRepository.deleteByBoardNumber(boardNumber);
 			commentRepository.deleteByBoardNumber(boardNumber);
 			favoriteRepository.deleteByBoardNumber(boardNumber);
