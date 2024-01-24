@@ -1,5 +1,6 @@
 package com.soon.board.provider;
 
+import java.util.Properties;
 import java.util.function.Supplier;
 
 import org.springframework.stereotype.Service;
@@ -35,15 +36,25 @@ public class AuthentificationProvider {
 //        }
         
         if (inputStream != null) {
-            // Now you can read from the InputStream as needed
-            // For example, you can use a BufferedReader to read text lines:
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                // Process each line as needed
-            	System.out.println("line: " + line);
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+                // Load the properties
+                Properties properties = new Properties();
+                properties.load(reader);
+
+                // Retrieve values from properties
+                String user = properties.getProperty("user");
+                String fingerprint = properties.getProperty("fingerprint");
+                String tenancy = properties.getProperty("tenancy");
+
+                // Print or use the values as needed
+                System.out.println("User: " + user);
+                System.out.println("Fingerprint: " + fingerprint);
+                System.out.println("Tenancy: " + tenancy);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                // Handle the exception (e.g., log, throw, etc.)
             }
-            reader.close();
         } else {
             System.err.println("Resource not found");
         }
