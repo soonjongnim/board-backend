@@ -25,48 +25,34 @@ public class AuthentificationProvider {
     public AuthenticationDetailsProvider getAuthenticationDetailsProvider() throws IOException {
 
         ClassLoader classLoader = AuthentificationProvider.class.getClassLoader();
-//        URL resourceUrl = classLoader.getResource("config");
-        InputStream inputStream = classLoader.getResourceAsStream("BOOT-INF/classes/config");
-
-//        if (resourceUrl != null) {
-//            String filePath = new File(resourceUrl.getFile()).getPath();
-//            System.out.println("File Path: " + filePath);
-//        } else {
-//            System.err.println("Resource not found");
-//        }
-        
-        if (inputStream != null) {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+        InputStream tempConfigInputStream = classLoader.getResourceAsStream("BOOT-INF/classes/config"); // server용 클래스패스
+//        InputStream tempOCIAPIKeyInputStream = classLoader.getResourceAsStream("BOOT-INF/classes/oci_api_key.pem"); // server용 클래스패스
+//
+        Properties properties = new Properties();
+        if (tempConfigInputStream != null) {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(tempConfigInputStream))) {
                 // Load the properties
-                Properties properties = new Properties();
                 properties.load(reader);
 
-                // Retrieve values from properties
-                String user = properties.getProperty("user");
-                String fingerprint = properties.getProperty("fingerprint");
-                String tenancy = properties.getProperty("tenancy");
-
-                // Print or use the values as needed
-                System.out.println("User: " + user);
-                System.out.println("Fingerprint: " + fingerprint);
-                System.out.println("Tenancy: " + tenancy);
+                System.out.println("User: " + properties.getProperty("user"));
+                System.out.println("Fingerprint: " + properties.getProperty("fingerprint"));
+                System.out.println("Tenancy: " + properties.getProperty("tenancy"));
 
             } catch (IOException e) {
                 e.printStackTrace();
-                // Handle the exception (e.g., log, throw, etc.)
             }
         } else {
             System.err.println("Resource not found");
         }
-        File tempConfigFile = new File(classLoader.getResource("BOOT-INF/classes/config").getFile());
-        File tempOCIAPIKey = new File(classLoader.getResource("BOOT-INF/classes/oci_api_key.pem").getFile());
+//        File tempConfigFile = new File(classLoader.getResource("config").getFile());
+//        File tempOCIAPIKey = new File(classLoader.getResource("oci_api_key.pem").getFile());
 
-        ConfigFile config = ConfigFileReader.parse(tempConfigFile.getPath(), "DEFAULT");
-
-        Supplier<InputStream> privateKeySupplier = new SimplePrivateKeySupplier(tempOCIAPIKey.getPath());
+//        ConfigFile config = ConfigFileReader.parse(tempConfigFile.getPath(), "DEFAULT");
+//        System.out.println("tempOCIAPIKey.getPath(): " + tempOCIAPIKey.getPath());
+        Supplier<InputStream> privateKeySupplier = new SimplePrivateKeySupplier("BOOT-INF/classes/oci_api_key.pem");
 
         AuthenticationDetailsProvider provider = SimpleAuthenticationDetailsProvider.builder()
-                .tenantId(config.get("tenancy")).userId(config.get("user")).fingerprint(config.get("fingerprint"))
+                .tenantId(properties.getProperty("tenancy")).userId(properties.getProperty("user")).fingerprint(properties.getProperty("fingerprint"))
                 .privateKeySupplier(privateKeySupplier).region(Region.AP_CHUNCHEON_1).build();
 
         return provider;
