@@ -25,7 +25,7 @@ public class AuthentificationProvider {
 
         ClassLoader classLoader = AuthentificationProvider.class.getClassLoader();
 //        URL resourceUrl = classLoader.getResource("config");
-        InputStream inputStream = classLoader.getResourceAsStream("config");
+        InputStream inputStream = classLoader.getResourceAsStream("BOOT-INF/classes/config");
 
 //        if (resourceUrl != null) {
 //            String filePath = new File(resourceUrl.getFile()).getPath();
