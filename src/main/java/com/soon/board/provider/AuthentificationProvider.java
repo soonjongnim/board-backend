@@ -58,8 +58,8 @@ public class AuthentificationProvider {
         } else {
             System.err.println("Resource not found");
         }
-        File tempConfigFile = new File(classLoader.getResource("config").getFile());
-        File tempOCIAPIKey = new File(classLoader.getResource("oci_api_key.pem").getFile());
+        File tempConfigFile = new File(classLoader.getResource("BOOT-INF/classes/config").getFile());
+        File tempOCIAPIKey = new File(classLoader.getResource("BOOT-INF/classes/oci_api_key.pem").getFile());
 
         ConfigFile config = ConfigFileReader.parse(tempConfigFile.getPath(), "DEFAULT");
 
