@@ -41,15 +41,15 @@ public class AuthentificationProvider {
             System.err.println("Resource not found");
         }
         
-        String ociApiKeyPath = "BOOT-INF/classes/oci_api_key.pem";
-
-        Properties ociApiKeyProperties = new Properties();
-        try (FileInputStream input = new FileInputStream(ociApiKeyPath)) {
-        	ociApiKeyProperties.load(input);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        System.out.println("ociApiKeyProperties: " + ociApiKeyProperties);
+//        String ociApiKeyPath = "BOOT-INF/classes/oci_api_key.pem";
+//
+//        Properties ociApiKeyProperties = new Properties();
+//        try (FileInputStream input = new FileInputStream(ociApiKeyPath)) {
+//        	ociApiKeyProperties.load(input);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        System.out.println("ociApiKeyProperties: " + ociApiKeyProperties);
 //        File tempConfigFile = new File(classLoader.getResource("config").getFile());
 //        File tempOCIAPIKey = new File(classLoader.getResource("BOOT-INF/classes/oci_api_key.pem").getFile());
 
