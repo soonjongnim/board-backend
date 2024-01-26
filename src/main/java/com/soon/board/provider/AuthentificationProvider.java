@@ -1,23 +1,19 @@
 package com.soon.board.provider;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Properties;
 import java.util.function.Supplier;
 
 import org.springframework.stereotype.Service;
 
-import com.oracle.bmc.ConfigFileReader;
-import com.oracle.bmc.ConfigFileReader.ConfigFile;
 import com.oracle.bmc.Region;
 import com.oracle.bmc.auth.AuthenticationDetailsProvider;
 import com.oracle.bmc.auth.SimpleAuthenticationDetailsProvider;
 import com.oracle.bmc.auth.SimplePrivateKeySupplier;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
 
 @Service
 public class AuthentificationProvider {
@@ -27,7 +23,7 @@ public class AuthentificationProvider {
         ClassLoader classLoader = AuthentificationProvider.class.getClassLoader();
         InputStream tempConfigInputStream = classLoader.getResourceAsStream("BOOT-INF/classes/config"); // server용 클래스패스
 //        InputStream tempOCIAPIKeyInputStream = classLoader.getResourceAsStream("BOOT-INF/classes/oci_api_key.pem"); // server용 클래스패스
-//
+// 
         Properties properties = new Properties();
         if (tempConfigInputStream != null) {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(tempConfigInputStream))) {
@@ -44,12 +40,22 @@ public class AuthentificationProvider {
         } else {
             System.err.println("Resource not found");
         }
+        
+        String ociApiKeyPath = "BOOT-INF/classes/oci_api_key.pem";
+
+        Properties ociApiKeyProperties = new Properties();
+        try (FileInputStream input = new FileInputStream(ociApiKeyPath)) {
+        	ociApiKeyProperties.load(input);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("ociApiKeyProperties: " + ociApiKeyProperties.toString());
 //        File tempConfigFile = new File(classLoader.getResource("config").getFile());
-//        File tempOCIAPIKey = new File(classLoader.getResource("oci_api_key.pem").getFile());
+//        File tempOCIAPIKey = new File(classLoader.getResource("BOOT-INF/classes/oci_api_key.pem").getFile());
 
 //        ConfigFile config = ConfigFileReader.parse(tempConfigFile.getPath(), "DEFAULT");
 //        System.out.println("tempOCIAPIKey.getPath(): " + tempOCIAPIKey.getPath());
-        Supplier<InputStream> privateKeySupplier = new SimplePrivateKeySupplier("BOOT-INF/classes/oci_api_key.pem");
+        Supplier<InputStream> privateKeySupplier = new SimplePrivateKeySupplier("oci_api_key.pem");
 
         AuthenticationDetailsProvider provider = SimpleAuthenticationDetailsProvider.builder()
                 .tenantId(properties.getProperty("tenancy")).userId(properties.getProperty("user")).fingerprint(properties.getProperty("fingerprint"))
