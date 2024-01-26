@@ -49,13 +49,15 @@ public class AuthentificationProvider {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("ociApiKeyProperties: " + ociApiKeyProperties.toString());
+        System.out.println("ociApiKeyProperties: " + ociApiKeyProperties);
 //        File tempConfigFile = new File(classLoader.getResource("config").getFile());
 //        File tempOCIAPIKey = new File(classLoader.getResource("BOOT-INF/classes/oci_api_key.pem").getFile());
 
 //        ConfigFile config = ConfigFileReader.parse(tempConfigFile.getPath(), "DEFAULT");
 //        System.out.println("tempOCIAPIKey.getPath(): " + tempOCIAPIKey.getPath());
-        Supplier<InputStream> privateKeySupplier = new SimplePrivateKeySupplier("oci_api_key.pem");
+        ClassLoader classLoader2 = getClass().getClassLoader();
+        Supplier<InputStream> privateKeySupplier = () -> classLoader2.getResourceAsStream("BOOT-INF/classes/oci_api_key.pem");
+//        Supplier<InputStream> privateKeySupplier = new SimplePrivateKeySupplier("BOOT-INF/classes/oci_api_key.pem");
 
         AuthenticationDetailsProvider provider = SimpleAuthenticationDetailsProvider.builder()
                 .tenantId(properties.getProperty("tenancy")).userId(properties.getProperty("user")).fingerprint(properties.getProperty("fingerprint"))
