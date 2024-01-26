@@ -22,8 +22,8 @@ public class AuthentificationProvider {
 
         ClassLoader classLoader = AuthentificationProvider.class.getClassLoader();
         InputStream tempConfigInputStream = classLoader.getResourceAsStream("BOOT-INF/classes/config"); // server용 클래스패스
-//        InputStream tempOCIAPIKeyInputStream = classLoader.getResourceAsStream("BOOT-INF/classes/oci_api_key.pem"); // server용 클래스패스
-// 
+
+        // server용  //
         Properties properties = new Properties();
         if (tempConfigInputStream != null) {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(tempConfigInputStream))) {
@@ -40,24 +40,15 @@ public class AuthentificationProvider {
         } else {
             System.err.println("Resource not found");
         }
+        //  서버용 end- //
         
-//        String ociApiKeyPath = "BOOT-INF/classes/oci_api_key.pem";
-//
-//        Properties ociApiKeyProperties = new Properties();
-//        try (FileInputStream input = new FileInputStream(ociApiKeyPath)) {
-//        	ociApiKeyProperties.load(input);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        System.out.println("ociApiKeyProperties: " + ociApiKeyProperties);
-//        File tempConfigFile = new File(classLoader.getResource("config").getFile());
-//        File tempOCIAPIKey = new File(classLoader.getResource("BOOT-INF/classes/oci_api_key.pem").getFile());
+//        File tempConfigFile = new File(classLoader.getResource("config").getFile());  // localhost용
+//        File tempOCIAPIKey = new File(classLoader.getResource("oci_api_key.pem").getFile()); // localhost용
 
-//        ConfigFile config = ConfigFileReader.parse(tempConfigFile.getPath(), "DEFAULT");
-//        System.out.println("tempOCIAPIKey.getPath(): " + tempOCIAPIKey.getPath());
-        ClassLoader classLoader2 = getClass().getClassLoader();
-        Supplier<InputStream> privateKeySupplier = () -> classLoader2.getResourceAsStream("BOOT-INF/classes/oci_api_key.pem");
-//        Supplier<InputStream> privateKeySupplier = new SimplePrivateKeySupplier("BOOT-INF/classes/oci_api_key.pem");
+//        ConfigFile config = ConfigFileReader.parse(tempConfigFile.getPath(), "DEFAULT"); // localhost용
+//        ClassLoader classLoader2 = getClass().getClassLoader();
+        Supplier<InputStream> privateKeySupplier = () -> classLoader.getResourceAsStream("BOOT-INF/classes/oci_api_key.pem");
+//        Supplier<InputStream> privateKeySupplier = new SimplePrivateKeySupplier(tempOCIAPIKey.getPath());	// localhost용
 
         AuthenticationDetailsProvider provider = SimpleAuthenticationDetailsProvider.builder()
                 .tenantId(properties.getProperty("tenancy")).userId(properties.getProperty("user")).fingerprint(properties.getProperty("fingerprint"))
