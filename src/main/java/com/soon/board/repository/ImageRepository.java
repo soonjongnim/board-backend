@@ -12,8 +12,16 @@ import com.soon.board.entity.ImageEntity;
 @Repository
 public interface ImageRepository extends JpaRepository<ImageEntity, Integer>{
 
-	List<ImageEntity> findByBoardNumber(Integer boardNumber);
+	List<ImageEntity> findByBoardNumberAndType(Integer number, String type);
+	List<ImageEntity> findByItemIdAndType(Integer number, String type);
 	
 	@Transactional
-	void deleteByBoardNumber(Integer boardNumber);
+	void deleteByBoardNumberAndType(Integer number, String type);
+	
+	@Transactional
+	void deleteByItemIdAndType(Integer number, String type);
+	
+	@Transactional
+	void deleteByItemIdAndImageAndType(Integer itemId, String delImageUrl, String type);
+
 }

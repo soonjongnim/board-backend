@@ -69,7 +69,7 @@ public class BoardServiceImpl implements BoardService {
 			resultSet = boardRepository.getBoard(boardNumber);
 			if (resultSet == null) return GetBoardResponseDto.noExistBoard();
 			
-			imageEntities = imageRepository.findByBoardNumber(boardNumber);
+			imageEntities = imageRepository.findByBoardNumberAndType(boardNumber, "BOARD");
 			
 		} catch (Exception exception) {
 			exception.printStackTrace();
@@ -200,7 +200,7 @@ public class BoardServiceImpl implements BoardService {
 			List<ImageEntity> imageEntities = new ArrayList<>();
 			
 			for (String image: boardImageList) {
-				ImageEntity imageEntity = new ImageEntity(boardNumber, image);
+				ImageEntity imageEntity = new ImageEntity(boardNumber, image, "BOARD");
 				imageEntities.add(imageEntity);
 			}
 			
@@ -279,12 +279,12 @@ public class BoardServiceImpl implements BoardService {
 			boardEntity.patchBoard(dto);
 			boardRepository.save(boardEntity);
 			
-			imageRepository.deleteByBoardNumber(boardNumber);
+			imageRepository.deleteByBoardNumberAndType(boardNumber, "BOARD");
 			List<String> boardImageList = dto.getBoardImageList();
 			List<ImageEntity> imageEntities = new ArrayList<>();
 			
 			for (String image: boardImageList) {
-				ImageEntity imageEntity = new ImageEntity(boardNumber, image);
+				ImageEntity imageEntity = new ImageEntity(boardNumber, image, "BOARD");
 				imageEntities.add(imageEntity);
 			}
 			imageRepository.saveAll(imageEntities);
@@ -323,8 +323,8 @@ public class BoardServiceImpl implements BoardService {
 			boolean isWriter = writerEmail.equals(email);
 			if (!isWriter) return DeleteBoardResponseDto.noPermission();
 			
-			fileService.cloudDelete(boardNumber, email);
-			imageRepository.deleteByBoardNumber(boardNumber);
+			fileService.cloudDelete(boardNumber, email, "BOARD");
+			imageRepository.deleteByBoardNumberAndType(boardNumber, "BOARD");
 			commentRepository.deleteByBoardNumber(boardNumber);
 			favoriteRepository.deleteByBoardNumber(boardNumber);
 			

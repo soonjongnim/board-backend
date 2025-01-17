@@ -20,6 +20,8 @@ public class AuthentificationProvider {
         File tempConfigFile = new File(classLoader.getResource("config").getFile());
         File tempOCIAPIKey = new File(classLoader.getResource("oci_api_key.pem").getFile());
 
+        System.out.println("tempConfigFile: " + tempConfigFile);
+        System.out.println("tempOCIAPIKey: " + tempOCIAPIKey);
         ConfigFile config = ConfigFileReader.parse(tempConfigFile.getPath(), "DEFAULT");
 
         Supplier<InputStream> privateKeySupplier = new SimplePrivateKeySupplier(tempOCIAPIKey.getPath());

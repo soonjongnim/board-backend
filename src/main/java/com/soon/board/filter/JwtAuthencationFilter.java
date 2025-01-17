@@ -7,6 +7,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,23 +17,25 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.soon.board.provider.JwtTokenProvider;
 import com.soon.board.provider.TokenProvider;
 
-@Component
+@Service
 public class JwtAuthencationFilter extends OncePerRequestFilter {
 	
 	// request가 들어왔을 때 Request Header의 Authorization 필드의 Bearer Token을 가져옴
 	// 가져온 토큰을 검증하고 검증 결과를 SecurityCotext에 추가
-	
+	private static final Logger logger = LoggerFactory.getLogger(JwtAuthencationFilter.class);
 	@Autowired private TokenProvider tokenProvider;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		
+		String requestURI = request.getRequestURI();
 		try {
 			String token = parseBearerToken(request);
 			if (token == null) {
@@ -42,8 +46,10 @@ public class JwtAuthencationFilter extends OncePerRequestFilter {
 			if (token != null && !token.equalsIgnoreCase("null")) {
 				// 토큰 검증해서 payload의 email 가져옴
 				String email = tokenProvider.validate(token);
+//				String email = tokenProvider.extractSubject(token);
 				
 				if (email == null) {
+					logger.debug("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
 					filterChain.doFilter(request, response);
 					return;
 				}

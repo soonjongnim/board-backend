@@ -26,6 +26,11 @@ public class DeleteFileResponseDto extends ResponseDto {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
 	}
 	
+	public static ResponseEntity<ResponseDto> notMissingEmail() {
+		ResponseDto result = new ResponseDto(ResponseCode.NOT_MISSING_EMAIL, ResponseMessage.NOT_MISSING_EMAIL);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+	}
+	
 	public static ResponseEntity<ResponseDto> notExistImages() {
 		ResponseDto result = new ResponseDto(ResponseCode.NOT_EXISTED_IMAGES, ResponseMessage.NOT_EXISTED_IMAGES);
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);

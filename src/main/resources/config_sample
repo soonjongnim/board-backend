@@ -1,0 +1,6 @@
+[DEFAULT]
+user=ocid1.user.oc1..aaaaaaaahw5j27ablyjovvftxihphq5fdskksijy4se675uidzkhpsf67s6q
+fingerprint=cd:6b:af:6d:f4:f8:29:1c:5f:0a:94:f7:57:81:ad:86
+key_file=~/.oci/oci_api_key.pem
+tenancy=ocid1.tenancy.oc1..aaaaaaaa2urnd55mw3i7mw423zggxd72jjg56fzlag5pokg5swng3e22abmq
+region=ap-chuncheon-1

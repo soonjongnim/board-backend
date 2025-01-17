@@ -12,8 +12,10 @@ public interface ResponseMessage {
 	String DUPLICATE_NICKNAME = "Duplicate nickname.";
 	String DUPLICATE_TEL_NUMBER = "Duplicate tel number.";
 	String NOT_EXISTED_USER = "This user does not exist.";
+	String NOT_MISSING_EMAIL = "You have not entered your email address.";
 	String NOT_EXISTED_BOARD = "This board does not exist.";
 	String NOT_EXISTED_IMAGES = "This images does not exist.";
+	String NOT_EXISTED_ITEMS = "This items does not exist.";
 	
 	// HTTP Status 401
 	String SIGN_IN_FAIL = "Login information mismatch.";

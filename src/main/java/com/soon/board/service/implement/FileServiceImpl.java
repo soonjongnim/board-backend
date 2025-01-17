@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -108,6 +109,7 @@ public class FileServiceImpl implements FileService {
 
 	        // Print the ETag of the uploaded object
 	        System.out.println("ETag: " + response.getETag());
+	        System.out.println("saveFileName success: " + saveFileName);
 	        
 		} catch (Exception exception) {
 			exception.printStackTrace();
@@ -137,35 +139,89 @@ public class FileServiceImpl implements FileService {
 	}
 	
 	@Override
-	public ResponseEntity<? super DeleteFileResponseDto> cloudDelete(Integer boardNumber, String email) {
-		
-		boolean existedUser = userRepository.existsByEmail(email);
-		if (!existedUser) return DeleteFileResponseDto.notExistUser();
-		
+	public ResponseEntity<? super DeleteFileResponseDto> cloudDelete(Integer number, String email, String type) {
+		List<ImageEntity> imageEntities = new ArrayList<>(); 
 		ObjectStorageClient client = null;
+		
 		try {
 			
+			// If type is "BOARD", validate email
+	        if ("BOARD".equals(type)) {
+	            if (email == null || email.trim().isEmpty()) {
+	                return DeleteFileResponseDto.notMissingEmail(); // Custom response for missing email
+	            }
+	            boolean existedUser = userRepository.existsByEmail(email);
+	            if (!existedUser) {
+	                return DeleteFileResponseDto.notExistUser();
+	            }
+	        }
+	        
 			client = new ObjectStorageClient(authentificationProvider.getAuthenticationDetailsProvider());
 	        client.setRegion(Region.AP_CHUNCHEON_1);
+	        System.out.println("cloudDelete type: " + type);
 	        
-	        List<ImageEntity> imageEntities = imageRepository.findByBoardNumber(boardNumber);
-			if (imageEntities == null) return DeleteFileResponseDto.notExistImages();
-			
-			for (ImageEntity imageEntity: imageEntities) {
-				String image = imageEntity.getImage();
-		        URI uri = URI.create(image);
-		        Path path = FileSystems.getDefault().getPath(uri.getPath());
-		        String objectName = path.getFileName().toString();
-				System.out.println("image: " + image);
-				System.out.println("objectName: " + objectName);
-				deleteObject(client, objectName);
-			}
+	        if ("BOARD".equals(type)) {
+	            imageEntities = imageRepository.findByBoardNumberAndType(number, type);
+	        } else if ("ITEM".equals(type)) {
+	        	imageEntities = imageRepository.findByItemIdAndType(number, type);
+	        } else {
+	            throw new IllegalArgumentException("Invalid type: " + type);
+	        }
 	        
+        	if (imageEntities == null) return DeleteFileResponseDto.notExistImages();
+        	
+        	for (ImageEntity imageEntity: imageEntities) {
+        		String image = imageEntity.getImage();
+        		URI uri = URI.create(image);
+        		Path path = FileSystems.getDefault().getPath(uri.getPath());
+        		String objectName = path.getFileName().toString();
+        		System.out.println("image: " + image);
+        		System.out.println("objectName: " + objectName);
+        		deleteObject(client, objectName);
+        	}
 		} catch (Exception exception) {
 			exception.printStackTrace();
 			return ResponseDto.databaseError();
 		} finally {
-			client.close();
+			if (client != null) {
+	            try {
+	                client.close();  // NullPointerException 방지
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
+	        }
+		}
+		
+		return DeleteFileResponseDto.success();
+	}
+	
+	@Override
+	public ResponseEntity<? super DeleteFileResponseDto> adminCloudImagesDelete(Integer itemId, List<String> delImageList) {
+		ObjectStorageClient client = null;
+		try {
+			client = new ObjectStorageClient(authentificationProvider.getAuthenticationDetailsProvider());
+	        client.setRegion(Region.AP_CHUNCHEON_1);
+	        System.out.println("fileService");
+        	for (String delImageUrl: delImageList) {
+        		URI uri = URI.create(delImageUrl);
+        		Path path = FileSystems.getDefault().getPath(uri.getPath());
+        		String objectName = path.getFileName().toString();
+        		System.out.println("fileService delImageUrl: " + delImageUrl);
+        		System.out.println("objectName: " + objectName);
+        		deleteObject(client, objectName);
+        		imageRepository.deleteByItemIdAndImageAndType(itemId, delImageUrl, "ITEM");
+        	}
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			return ResponseDto.databaseError();
+		} finally {
+			if (client != null) {
+	            try {
+	                client.close();  // NullPointerException 방지
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
+	        }
 		}
 		
 		return DeleteFileResponseDto.success();

@@ -19,11 +19,22 @@ public class ImageEntity {
 
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int sequence;
-	private int boardNumber;
+	private Integer boardNumber;
+	private Integer itemId;
 	private String image;
+	private String type;
 	
-	public ImageEntity(int boardNumber, String image) {
-		this.boardNumber = boardNumber;
-		this.image = image;
+	public ImageEntity(int number, String image, String type) {
+		if ("BOARD".equals(type)) {
+			this.boardNumber = number;
+			this.image = image;
+			this.type = type;
+        } else if ("ITEM".equals(type)) {
+			this.itemId = number;
+			this.image = image;
+			this.type = type;
+        } else {
+        	throw new IllegalArgumentException("Type must be either 'board' or 'item'");
+        }
 	}
 }

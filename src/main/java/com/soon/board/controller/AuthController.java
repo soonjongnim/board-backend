@@ -16,6 +16,7 @@ import com.soon.board.dto.request.auth.SignUpRequestDto;
 import com.soon.board.dto.response.auth.SignInResponseDto;
 import com.soon.board.dto.response.auth.SignUpResponseDto;
 import com.soon.board.entity.UserEntity;
+import com.soon.board.provider.JwtTokenProvider;
 import com.soon.board.provider.TokenProvider;
 import com.soon.board.repository.UserRepository;
 import com.soon.board.service.AuthService;
