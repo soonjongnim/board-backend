@@ -5,7 +5,7 @@ plugins {
 	//id 'io.spring.dependency-management' version '1.1.4'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 	// queryDSL 추가
-	id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
+	//id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
 }
 
 group = 'com.soon.board'
@@ -72,22 +72,22 @@ tasks.named('test') {
 // queryDSL 추가 : QueryDSL 빌드 옵션
 def querydslDir = "build/generated/querydsl"
 
-clean {
-   delete file(querydslDir)
-}
+//clean {
+   //delete file(querydslDir)
+//}
 
-querydsl {
-	jpa = true
-	querydslSourcesDir = querydslDir
-}
+//querydsl {
+	//jpa = true
+	//querydslSourcesDir = querydslDir
+//}
 
-sourceSets {	// IDE의 소스 폴더에 자동으로 넣어준다.
-	main.java.srcDir querydslDir
-}
+//sourceSets {	// IDE의 소스 폴더에 자동으로 넣어준다.
+	//main.java.srcDir querydslDir
+//}
 
-configurations {
-	querydsl.extendsFrom compileClasspath	// 컴파일이 될때 같이 수행
-}
+//configurations {
+	//querydsl.extendsFrom compileClasspath	// 컴파일이 될때 같이 수행
+//}
 
 compileQuerydsl {
 	options.annotationProcessorPath = configurations.querydsl	// Q파일을 생성해준다.
