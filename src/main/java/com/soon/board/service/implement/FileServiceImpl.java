@@ -79,7 +79,7 @@ public class FileServiceImpl implements FileService {
 		String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
 		String uuid = UUID.randomUUID().toString();
 		String saveFileName = uuid + extension;
-		
+		System.out.println("saveFileName: " + saveFileName);
 		Map<String, String> metadata = null;
 		String contentType = file.getContentType();
 		String contentEncoding = null;

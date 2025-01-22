@@ -36,6 +36,7 @@ public class FileController {
 	@PostMapping("/upload")
 	public String upload(HttpServletRequest req, @RequestParam("file") MultipartFile file) {
 //		String url = fileService.upload(file);
+		System.out.println("file: " + file);
 		String url = fileService.cloudUpload(file);
 		return url;
 	}
