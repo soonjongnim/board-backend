@@ -89,8 +89,8 @@ def querydslDir = "build/generated/querydsl"
 	//querydsl.extendsFrom compileClasspath	// 컴파일이 될때 같이 수행
 //}
 
-compileQuerydsl {
-	options.annotationProcessorPath = configurations.querydsl	// Q파일을 생성해준다.
-}
+//compileQuerydsl {
+	//options.annotationProcessorPath = configurations.querydsl	// Q파일을 생성해준다.
+//}
 
 // 여기까지
