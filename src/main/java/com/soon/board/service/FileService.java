@@ -15,4 +15,5 @@ public interface FileService {
 	Resource getImage(String fileName);
 	ResponseEntity<? super DeleteFileResponseDto> cloudDelete(Integer number, String email, String type);
 	ResponseEntity<? super DeleteFileResponseDto> adminCloudImagesDelete(Integer itemId, List<String> delImageList);
+	ResponseEntity<? super DeleteFileResponseDto> adminCloudThumbnailsDelete(Integer itemId, List<String> delThumbnailList);
 }

@@ -25,6 +25,7 @@ public class ItemListItem {
 	private LocalDateTime regTime;
 	private LocalDateTime updateTime;
 	private String writerEmail;
+	private String thumbnailUrl; // 메인 썸네일이미지
 	
 	public ItemListItem(ItemEntity itemListEntity) {
 		this.itemId = itemListEntity.getItemId();
@@ -36,6 +37,7 @@ public class ItemListItem {
 		this.regTime = itemListEntity.getRegTime();
 		this.updateTime = itemListEntity.getUpdateTime();
 		this.writerEmail = itemListEntity.getWriterEmail();
+		this.thumbnailUrl = itemListEntity.getThumbnailUrl();
 	}
 	
 	public static List<ItemListItem> getList(List<ItemEntity> itemListEntities) {

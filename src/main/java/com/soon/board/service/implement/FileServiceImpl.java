@@ -29,6 +29,7 @@ import com.soon.board.dto.response.file.DeleteFileResponseDto;
 import com.soon.board.entity.ImageEntity;
 import com.soon.board.provider.AuthentificationProvider;
 import com.soon.board.repository.ImageRepository;
+import com.soon.board.repository.ThumbnailRepository;
 import com.soon.board.repository.UserRepository;
 import com.soon.board.service.FileService;
 
@@ -47,6 +48,7 @@ public class FileServiceImpl implements FileService {
 	@Autowired AuthentificationProvider authentificationProvider;
 	@Autowired UserRepository userRepository;
 	@Autowired ImageRepository imageRepository;
+	@Autowired ThumbnailRepository thumbnailRepository;
 	
 	@Override
 	public String upload(MultipartFile file) {
@@ -72,13 +74,14 @@ public class FileServiceImpl implements FileService {
 
 	@Override
 	public String cloudUpload(MultipartFile file) {
-		
 		if (file.isEmpty()) return null;
         
 		String originalFileName = file.getOriginalFilename();
 		String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
 		String uuid = UUID.randomUUID().toString();
 		String saveFileName = uuid + extension;
+		System.out.println("cloudUpload file: " + file.getOriginalFilename());
+		System.out.println("cloudUpload file.getContentType: " + file.getContentType());
 		System.out.println("saveFileName: " + saveFileName);
 		Map<String, String> metadata = null;
 		String contentType = file.getContentType();
@@ -89,7 +92,7 @@ public class FileServiceImpl implements FileService {
 		try {
 			
 			InputStream body = file.getInputStream();
-			
+//######### getAuthenticationDetailsProvider() localhost, server 용 설정 변경해줘야함.
 			client = new ObjectStorageClient(authentificationProvider.getAuthenticationDetailsProvider());
 	        client.setRegion(Region.AP_CHUNCHEON_1);
 
@@ -201,7 +204,7 @@ public class FileServiceImpl implements FileService {
 		try {
 			client = new ObjectStorageClient(authentificationProvider.getAuthenticationDetailsProvider());
 	        client.setRegion(Region.AP_CHUNCHEON_1);
-	        System.out.println("fileService");
+	        System.out.println("fileService adminCloudImagesDelete");
         	for (String delImageUrl: delImageList) {
         		URI uri = URI.create(delImageUrl);
         		Path path = FileSystems.getDefault().getPath(uri.getPath());
@@ -210,6 +213,38 @@ public class FileServiceImpl implements FileService {
         		System.out.println("objectName: " + objectName);
         		deleteObject(client, objectName);
         		imageRepository.deleteByItemIdAndImageAndType(itemId, delImageUrl, "ITEM");
+        	}
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			return ResponseDto.databaseError();
+		} finally {
+			if (client != null) {
+	            try {
+	                client.close();  // NullPointerException 방지
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
+	        }
+		}
+		
+		return DeleteFileResponseDto.success();
+	}
+	
+	@Override
+	public ResponseEntity<? super DeleteFileResponseDto> adminCloudThumbnailsDelete(Integer itemId, List<String> delThumbnailList) {
+		ObjectStorageClient client = null;
+		try {
+			client = new ObjectStorageClient(authentificationProvider.getAuthenticationDetailsProvider());
+	        client.setRegion(Region.AP_CHUNCHEON_1);
+	        System.out.println("fileService adminCloudThumbnailsDelete");
+        	for (String delThumbnailUrl: delThumbnailList) {
+        		URI uri = URI.create(delThumbnailUrl);
+        		Path path = FileSystems.getDefault().getPath(uri.getPath());
+        		String objectName = path.getFileName().toString();
+        		System.out.println("fileService delThumbnailUrl: " + delThumbnailUrl);
+        		System.out.println("objectName: " + objectName);
+        		deleteObject(client, objectName);
+        		thumbnailRepository.deleteByItemIdAndThumbnailUrl(itemId, delThumbnailUrl);
         	}
 		} catch (Exception exception) {
 			exception.printStackTrace();

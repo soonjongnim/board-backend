@@ -57,9 +57,9 @@ public class ItemEntity {
 	private LocalDateTime regTime;	// 등록 시간
 	private LocalDateTime updateTime;	// 수정 시간
 	private String writerEmail; // 작성자
+	private String thumbnailUrl; // 메인 썸네일이미지
 	
 	public ItemEntity(PostItemRequestDto dto) {
-			
 //		Date now = Date.from(Instant.now());
 //		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 //		String writeDatetime = simpleDateFormat.format(now);

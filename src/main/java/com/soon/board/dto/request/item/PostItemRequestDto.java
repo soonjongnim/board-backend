@@ -7,6 +7,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import com.soon.board.constant.ItemSellStatus;
+import com.soon.board.dto.ThumbnailFileDto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,11 +21,15 @@ public class PostItemRequestDto {
 	private Integer price;	// 가격
 	@NotNull(message = "재고수량은 필수 입력 값입니다.")
 	private Integer stockNumber;	// 재고수량
-	@NotBlank(message = "상품 상세 설명은 필수 입력 값입니다.")
+	
+//	@NotBlank(message = "상품 상세 설명은 필수 입력 값입니다.")
 	private String itemDetail;	// 상품 상세 설명
 	private ItemSellStatus itemSellStatus;	// 상품 판매 상태
 	private LocalDateTime regTime;	// 등록 시간
 	private LocalDateTime updateTime;	// 수정 시간
 	private String writerEmail;	// 작성자
-	private List<String> imageUrlList;	// 이미지 리스트
+	
+	private List<String> imageUrlList;	// ✅ 빈 배열도 허용 // 이미지 리스트
+	@NotNull
+	private List<String> thumbnailUrlList; // ✅ 썸네일 리스트로 받음
 }

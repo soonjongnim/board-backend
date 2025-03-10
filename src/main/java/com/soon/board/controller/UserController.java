@@ -15,14 +15,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.soon.board.dto.Fruit;
 import com.soon.board.dto.request.user.PatchNicknameRequestDto;
 import com.soon.board.dto.request.user.PatchProfileImageRequestDto;
 import com.soon.board.dto.response.user.GetSignInUserResponseDto;
 import com.soon.board.dto.response.user.GetUserResponseDto;
 import com.soon.board.dto.response.user.PatchNicknameResponseDto;
 import com.soon.board.dto.response.user.PatchProfileImageResponseDto;
-import com.soon.board.service.FruitService;
 import com.soon.board.service.UserService;
 
 //@CrossOrigin(originPatterns = "http://localhost:3000")
@@ -30,7 +28,6 @@ import com.soon.board.service.UserService;
 @RequestMapping("api/user")
 public class UserController {
 	@Autowired UserService userService;
-	@Autowired FruitService fruitService;
 	
 	@GetMapping("/{email}")
 	public ResponseEntity<? super GetUserResponseDto> getUser(
@@ -46,13 +43,6 @@ public class UserController {
 		ResponseEntity<? super GetSignInUserResponseDto> response = userService.getSignInUser(email);
 		System.out.println("response: " + response.toString());
 		return response;
-	};
-	
-	@GetMapping("/fruit")
-	public List<Fruit> getFruitList() {
-		System.out.println("getFruitList");
-		System.out.println(fruitService.getList());
-		return fruitService.getList();
 	};
 	
 	@PatchMapping("/nickname")

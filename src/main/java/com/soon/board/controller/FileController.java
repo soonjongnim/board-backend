@@ -70,4 +70,21 @@ public class FileController {
 		ResponseEntity<? super DeleteFileResponseDto> response = fileService.adminCloudImagesDelete(itemId, urlList);
 		return response;
 	}
+	
+	@DeleteMapping("/admin/cloudThumbnailsDelete/{itemId}")
+	public ResponseEntity<? super DeleteFileResponseDto> adminCloudThumbnailsDelete(@PathVariable("itemId") Integer itemId, @RequestBody String deletedThumbnailList) throws JsonMappingException, JsonProcessingException {
+		System.out.println("adminCloudThumbnailsDelete");
+		System.out.println("itemId: " + itemId);
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<String> urlList = null;
+        try {
+            // Convert JSON string to List<String>
+            urlList = objectMapper.readValue(deletedThumbnailList, new TypeReference<List<String>>() {});
+            System.out.println("Converted List: " + urlList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+		ResponseEntity<? super DeleteFileResponseDto> response = fileService.adminCloudThumbnailsDelete(itemId, urlList);
+		return response;
+	}
 }

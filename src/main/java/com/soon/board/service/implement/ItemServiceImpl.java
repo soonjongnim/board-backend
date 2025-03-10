@@ -7,7 +7,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.apache.commons.fileupload.disk.DiskFileItem;
+import org.apache.commons.io.IOUtils;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+
+import com.soon.board.dto.ThumbnailFileDto;
 import com.soon.board.dto.request.item.PatchItemRequestDto;
 import com.soon.board.dto.request.item.PostItemRequestDto;
 import com.soon.board.dto.request.item.SearchItemRequestDto;
@@ -20,8 +30,10 @@ import com.soon.board.dto.response.item.PatchItemResponseDto;
 import com.soon.board.dto.response.item.PostItemResponseDto;
 import com.soon.board.entity.ImageEntity;
 import com.soon.board.entity.ItemEntity;
+import com.soon.board.entity.ThumbnailEntity;
 import com.soon.board.repository.ImageRepository;
 import com.soon.board.repository.ItemRepository;
+import com.soon.board.repository.ThumbnailRepository;
 import com.soon.board.repository.UserRepository;
 import com.soon.board.repository.resultSet.GetItemResultSet;
 import com.soon.board.service.FileService;
@@ -33,6 +45,7 @@ public class ItemServiceImpl implements ItemService {
 	@Autowired private ItemRepository itemRepository;
 	@Autowired private ImageRepository imageRepository;
 	@Autowired private FileService fileService;
+	@Autowired private ThumbnailRepository thumbnailRepository;
 	
 	@Override
 	public ResponseEntity<? super PostItemResponseDto> postItem(PostItemRequestDto dto) {
@@ -48,12 +61,34 @@ public class ItemServiceImpl implements ItemService {
 			
 			List<String> imageUrlList = dto.getImageUrlList();
 			System.out.println("imageUrlList: " + imageUrlList);
-			List<ImageEntity> imageEntities = new ArrayList<>();
-			for (String image: imageUrlList) {
-				ImageEntity imageEntity = new ImageEntity(itemId, image, "ITEM");
-				imageEntities.add(imageEntity);
+			if (imageUrlList != null && !imageUrlList.isEmpty()) { // ✅ 빈 배열이 아닐 때만 실행
+			    List<ImageEntity> imageEntities = new ArrayList<>();
+
+			    for (String image : imageUrlList) {
+			        ImageEntity imageEntity = new ImageEntity(itemId, image, "ITEM");
+			        imageEntities.add(imageEntity);
+			    }
+
+			    imageRepository.saveAll(imageEntities);
+			} else {
+			    System.out.println("imageUrlList가 비어있거나 null입니다. 저장하지 않습니다.");
 			}
-			imageRepository.saveAll(imageEntities);
+			
+			List<String> thumbnailUrlList = dto.getThumbnailUrlList();
+            System.out.println("thumbnailUrlList: " + thumbnailUrlList);
+			if (thumbnailUrlList != null && !thumbnailUrlList.isEmpty()) { // ✅ 빈 배열이 아닐 때만 실행
+			    List<ThumbnailEntity> thumbnailEntities = new ArrayList<>();
+			    int index = 0; // ✅ 인덱스 초기화
+			    for (String thumbnailUrl : thumbnailUrlList) {
+			    	ThumbnailEntity imageEntity = new ThumbnailEntity(itemId, thumbnailUrl, index);
+			    	thumbnailEntities.add(imageEntity);
+			        index++; // ✅ 인덱스 증가
+			    }
+
+			    thumbnailRepository.saveAll(thumbnailEntities);
+			} else {
+			    System.out.println("thumbnailUrlList가 비어있거나 null입니다. 저장하지 않습니다.");
+			}
 			
 		} catch (Exception exception) {
 			exception.printStackTrace();
@@ -85,7 +120,7 @@ public class ItemServiceImpl implements ItemService {
 		List<ItemEntity> itemListEntities = new ArrayList<>();
 		
 		try {
-			itemListEntities = itemRepository.findByOrderByRegTimeDesc();
+			itemListEntities = itemRepository.findItemsWithFirstThumbnailOrderedByRegTimeDesc();
 		} catch (Exception exception) {
 			exception.printStackTrace();
 			return ResponseDto.databaseError();
@@ -120,20 +155,20 @@ public class ItemServiceImpl implements ItemService {
 	@Override
 	public ResponseEntity<? super GetItemResponseDto> getItem(Integer itemId) {
 		GetItemResultSet resultSet = null;
-//		List<ImageEntity> imageEntities = new ArrayList<>();
+		List<ThumbnailEntity> thumbnailEntities = new ArrayList<>();
 		
 		try {
 			resultSet = itemRepository.getItem(itemId);
 			if (resultSet == null) return GetItemResponseDto.noExistItem();
 			
-//			imageEntities = imageRepository.findByBoardNumber(boardNumber);
+			thumbnailEntities = thumbnailRepository.findByItemId(itemId);
 			
 		} catch (Exception exception) {
 			exception.printStackTrace();
 			return ResponseDto.databaseError();
 		}
 		
-		return GetItemResponseDto.success(resultSet);
+		return GetItemResponseDto.success(resultSet, thumbnailEntities);
 	}
 
 	@Override
@@ -150,12 +185,35 @@ public class ItemServiceImpl implements ItemService {
 			
 			List<String> imageUrlList = dto.getImageUrlList();
 			System.out.println("imageUrlList: " + imageUrlList);
-			List<ImageEntity> imageEntities = new ArrayList<>();
-			for (String image: imageUrlList) {
-				ImageEntity imageEntity = new ImageEntity(itemId, image, "ITEM");
-				imageEntities.add(imageEntity);
+			if (imageUrlList != null && !imageUrlList.isEmpty()) { // ✅ 빈 배열이 아닐 때만 실행
+			    List<ImageEntity> imageEntities = new ArrayList<>();
+
+			    for (String image : imageUrlList) {
+			        ImageEntity imageEntity = new ImageEntity(itemId, image, "ITEM");
+			        imageEntities.add(imageEntity);
+			    }
+
+			    imageRepository.saveAll(imageEntities);
+			} else {
+			    System.out.println("imageUrlList가 비어있거나 null입니다. 저장하지 않습니다.");
 			}
-			imageRepository.saveAll(imageEntities);
+			
+			List<String> thumbnailUrlList = dto.getThumbnailUrlList();
+            System.out.println("thumbnailUrlList: " + thumbnailUrlList);
+			if (thumbnailUrlList != null && !thumbnailUrlList.isEmpty()) { // ✅ 빈 배열이 아닐 때만 실행
+			    List<ThumbnailEntity> thumbnailEntities = new ArrayList<>();
+			    int index = 0; // ✅ 인덱스 초기화
+			    for (String thumbnailUrl : thumbnailUrlList) {
+			    	ThumbnailEntity imageEntity = new ThumbnailEntity(itemId, thumbnailUrl, index);
+			    	thumbnailEntities.add(imageEntity);
+			        index++; // ✅ 인덱스 증가
+			    }
+
+			    thumbnailRepository.saveAll(thumbnailEntities);
+			} else {
+			    System.out.println("thumbnailUrlList가 비어있거나 null입니다. 저장하지 않습니다.");
+			}
+			
 		} catch (Exception exception) {
 			exception.printStackTrace();
 			return ResponseDto.databaseError();

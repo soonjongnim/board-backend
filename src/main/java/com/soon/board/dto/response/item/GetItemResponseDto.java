@@ -12,6 +12,7 @@ import com.soon.board.common.ResponseMessage;
 import com.soon.board.constant.ItemSellStatus;
 import com.soon.board.dto.response.ResponseDto;
 import com.soon.board.entity.ImageEntity;
+import com.soon.board.entity.ThumbnailEntity;
 import com.soon.board.repository.resultSet.GetItemResultSet;
 
 import lombok.Getter;
@@ -28,15 +29,16 @@ public class GetItemResponseDto extends ResponseDto {
 	private LocalDateTime regTime;
 	private LocalDateTime updateTime;
 	private String writerEmail;
+	private List<String> thumbnailList;
 	
-	private GetItemResponseDto(GetItemResultSet resultSet) {
+	private GetItemResponseDto(GetItemResultSet resultSet, List<ThumbnailEntity> thumbnailEntities) {
 		super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
 		
-//		List<String> boardImageList = new ArrayList<>();
-//		for (ImageEntity imageEntity: imageEntities) {
-//			String boardImage = imageEntity.getImage();
-//			boardImageList.add(boardImage);
-//		}
+		List<String> getThumbnailList = new ArrayList<>();
+		for (ThumbnailEntity thumbnailEntitie: thumbnailEntities) {
+			String thumbnail = thumbnailEntitie.getThumbnailUrl();
+			getThumbnailList.add(thumbnail);
+		}
 		
 		this.itemId = resultSet.getItemId();
 		this.itemName = resultSet.getItemName();
@@ -47,10 +49,11 @@ public class GetItemResponseDto extends ResponseDto {
 		this.regTime = resultSet.getRegTime();
 		this.updateTime = resultSet.getUpdateTime();
 		this.writerEmail = resultSet.getWriterEmail();
+		this.thumbnailList = getThumbnailList;
 	}
 	
-	public static ResponseEntity<GetItemResponseDto> success(GetItemResultSet resultSet) {
-		GetItemResponseDto result = new GetItemResponseDto(resultSet);
+	public static ResponseEntity<GetItemResponseDto> success(GetItemResultSet resultSet, List<ThumbnailEntity> thumbnailEntities) {
+		GetItemResponseDto result = new GetItemResponseDto(resultSet, thumbnailEntities);
 		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
 	

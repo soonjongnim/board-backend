@@ -22,41 +22,24 @@ public interface ItemRepository extends JpaRepository<ItemEntity, Integer>,
 	QuerydslPredicateExecutor<ItemEntity>, ItemRepositoryCustom {
 	List<ItemEntity> findByOrderByRegTimeDesc();
 	
-
-//    default List<ItemEntity> getSearchItemList(SearchItemRequestDto searchParams) {
-//    	System.out.println("searchParams: " + searchParams);
-//        StringBuilder queryBuilder = new StringBuilder("SELECT * FROM items WHERE ");
-//
-//        // searchDateType이 null이 아닌 경우에만 생성일에 대한 조건 추가
-//        if (searchParams.getSearchDateType() != null) {
-//            queryBuilder.append("('").append(searchParams.getSearchDateType()).append("' IS NULL ");
-//            queryBuilder.append("OR ('").append(searchParams.getSearchDateType()).append("' = 'created' ");
-//            queryBuilder.append("AND reg_time BETWEEN '").append(searchParams.getStartDate()).append("' AND '").append(searchParams.getEndDate()).append("')) ");
-//        }
-//
-//        // itemName이 null이 아닌 경우에만 상품명에 대한 조건 추가
-//        if (searchParams.getItemName() != null) {
-//            queryBuilder.append("AND (").append("NULL").append(" IS NULL ");
-//            queryBuilder.append("OR item_name LIKE CONCAT('%', '").append(searchParams.getItemName()).append("', '%')) ");
-//        }
-//
-//        // itemSellStatuss가 null이 아닌 경우에만 상품 판매 상태에 대한 조건 추가
-//        if (searchParams.getItemSellStatuss() != null) {
-//            queryBuilder.append("AND (").append("NULL").append(" IS NULL ");
-//            queryBuilder.append("OR item_sell_status IN ").append("NULL").append(") ");
-//        }
-//
-//        // itemIds가 null이 아닌 경우에만 상품 id에 대한 조건 추가
-//        if (searchParams.getItemIds() != null) {
-//            queryBuilder.append("AND (").append("NULL").append(" IS NULL ");
-//            queryBuilder.append("OR item_id IN ").append("NULL").append(") ");
-//        }
-//
-//        javax.persistence.Query query = entityManager.createNativeQuery(queryBuilder.toString(), ItemEntity.class);
-//        @SuppressWarnings("unchecked")
-//        List<ItemEntity> itemList = query.getResultList();
-//        return itemList;
-//    }
+	@Query(value = "SELECT i.item_id, "
+			  + "i.item_name, "
+			  + "i.item_sell_status, "
+			  + "i.price, "
+			  + "i.reg_time, "
+			  + "i.stock_number, "
+			  + "i.update_time, "
+			  + "i.writer_email, "
+			  + "i.item_detail, "
+	          + "(SELECT t.thumbnail_url "
+	          + "FROM thumbnail_images t "
+	          + "WHERE t.item_id = i.item_id "
+	          + "ORDER BY t.id ASC "
+	          + "LIMIT 1) AS thumbnail_url "
+	        + "FROM items i "
+	        + "ORDER BY i.reg_time DESC", 
+	        nativeQuery = true)
+    List<ItemEntity> findItemsWithFirstThumbnailOrderedByRegTimeDesc();
 	
 	@Query(value="SELECT * FROM items "
 //		    + "WHERE item_name LIKE CONCAT('%', :itemName, '%')",

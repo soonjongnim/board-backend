@@ -3,6 +3,7 @@ package com.soon.board.controller;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.soon.board.dto.ThumbnailFileDto;
 import com.soon.board.dto.request.board.PatchBoardRequestDto;
 import com.soon.board.dto.request.item.PatchItemRequestDto;
 import com.soon.board.dto.request.item.PostItemRequestDto;
@@ -43,10 +45,25 @@ public class ItemController {
 	@PostMapping("")
 	public ResponseEntity<? super PostItemResponseDto> postItem(
 			@RequestBody @Valid PostItemRequestDto requestBody) {		
-		System.out.println("requestBody: " + requestBody);
-		ResponseEntity<? super PostItemResponseDto> response = itemService.postItem(requestBody);
-		System.out.println("response: " + response);
-		return response;
+		try {
+			System.out.println("requestBody: " + requestBody);
+//			List<ThumbnailFileDto> thumbnails = requestBody.getThumbnailUrlList();
+//            System.out.println("썸네일: " + thumbnails);
+//            System.out.println("썸네일 개수: " + thumbnails.size());
+//
+//            for (ThumbnailFileDto file : thumbnails) {
+//                System.out.println("파일명: " + file.getName());
+//                System.out.println("파일 크기: " + file.getSize() + " bytes");
+//                System.out.println("파일 타입: " + file.getType());
+//                System.out.println("파일 수정 날짜: " + file.getLastModified());
+//            }
+			ResponseEntity<? super PostItemResponseDto> response = itemService.postItem(requestBody);
+			System.out.println("response: " + response);
+			return ResponseEntity.ok("상품이 성공적으로 생성되었습니다.");
+//			return response;
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
 	}
 //	@PostMapping("")
 //	public ResponseEntity<? super PostItemResponseDto> postItem(
