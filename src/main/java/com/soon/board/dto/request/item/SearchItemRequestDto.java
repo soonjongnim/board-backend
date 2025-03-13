@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class SearchItemRequestDto {
-//	private List<String> itemIds;	// 상품id
+//	private String itemIds;	// 상품id
 //	private String searchDateType;	// 생성일 기준 아님 수정일기준
 //	private String itemName;	// 상품명
 	private String itemSellStatus;	// 상품 판매 상태
@@ -27,6 +27,8 @@ public class SearchItemRequestDto {
     private String searchQuery = "";
 	private String startDate;	// 시작시간
 	private String endDate;	// 종료시간
+	private String page;	// 현재 페이지
+	private String itemsPerPage;	// 페이지당 가져올 개수
 	
 	public SearchItemRequestDto(SearchItemRequestDto searchParams) {
 		this.itemSellStatus = searchParams.getItemSellStatus();
@@ -34,6 +36,8 @@ public class SearchItemRequestDto {
 		this.searchQuery = searchParams.getSearchQuery();
 		this.startDate = searchParams.getStartDate();
 		this.endDate = searchParams.getEndDate();
+		this.page = searchParams.getPage();
+		this.itemsPerPage = searchParams.getItemsPerPage();
 	}
 	
 	public SearchItemRequestDto(String searchParams) {
@@ -45,7 +49,8 @@ public class SearchItemRequestDto {
 		this.searchQuery = getSingleValue(queryParams, "searchQuery");
 		this.startDate = getSingleValue(queryParams, "startDate");
 		this.endDate = getSingleValue(queryParams, "endDate");
-//		this.itemSellStatuss = getListValue(queryParams, "itemSellStatuss");
+		this.page = getSingleValue(queryParams, "page");
+		this.itemsPerPage = getSingleValue(queryParams, "itemsPerPage");
 	}
 	
 	private Map<String, String[]> parseQueryParams(String searchParams) {

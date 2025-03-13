@@ -2,24 +2,17 @@ package com.soon.board.repository;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.soon.board.dto.request.item.SearchItemRequestDto;
 import com.soon.board.entity.ItemEntity;
 import com.soon.board.repository.resultSet.GetItemResultSet;
 
 @Repository
 //@Transactional(readOnly = true)
-public interface ItemRepository extends JpaRepository<ItemEntity, Integer>,
-	QuerydslPredicateExecutor<ItemEntity>, ItemRepositoryCustom {
+public interface ItemRepository extends JpaRepository<ItemEntity, Integer> {
 	List<ItemEntity> findByOrderByRegTimeDesc();
 	
 	@Query(value = "SELECT i.item_id, "
@@ -41,21 +34,33 @@ public interface ItemRepository extends JpaRepository<ItemEntity, Integer>,
 	        nativeQuery = true)
     List<ItemEntity> findItemsWithFirstThumbnailOrderedByRegTimeDesc();
 	
-	@Query(value="SELECT * FROM items "
-//		    + "WHERE item_name LIKE CONCAT('%', :itemName, '%')",
-			+ "WHERE (:searchDateType IS NOT NULL "
-	        + "OR (:searchDateType = 'created' AND reg_time BETWEEN :startDate AND :endDate)) "
-	        + "AND (:itemName IS NOT NULL OR item_name LIKE CONCAT('%', :itemName, '%')) "
-	        + "AND (:itemSellStatuss IS NOT NULL OR item_sell_status IN :itemSellStatuss) "
-	        + "AND (:itemIds IS NOT NULL OR item_id IN :itemIds)",
-		    nativeQuery=true)
-	List<ItemEntity> getSearchItemList(@Param("itemIds") List<String> itemIds,
-			@Param("searchDateType") String searchDateType,
-			@Param("itemName") String itemName,
+    @Query(value = "SELECT item_id, " +
+            "item_name, " +
+            "item_sell_status, " +
+            "price, " +
+            "reg_time, " +
+            "stock_number, " +
+            "update_time, " +
+            "writer_email, " +
+            "item_detail, " +
+            "COUNT(*) OVER() AS total_count " +
+        "FROM items " +
+        "WHERE ((:searchBy = 'itemName' AND :searchQuery IS NOT NULL AND item_name LIKE CONCAT('%', :searchQuery, '%')) " +
+        "OR (:searchBy = 'writerEmail' AND :searchQuery IS NOT NULL AND writer_email LIKE CONCAT('%', :searchQuery, '%')) " +
+        "OR (:searchQuery IS NULL)) " +
+        "AND (:itemSellStatus IS NULL OR :itemSellStatus = '' OR :itemSellStatus = 'ALL' OR :itemSellStatus = 'undefined' OR item_sell_status = :itemSellStatus) " +
+        "AND (:startDate IS NULL OR :endDate IS NULL OR reg_time BETWEEN :startDate AND :endDate) " +
+        "LIMIT :itemsPerPage OFFSET :offset",
+        nativeQuery = true)
+	List<Object[]> getSearchItemList(
+			@Param("searchBy") String searchBy,
+			@Param("searchQuery") String searchQuery,
             @Param("startDate") String startDate,
             @Param("endDate") String endDate,
-            @Param("itemSellStatuss") List<String> itemSellStatuss
-            );
+            @Param("itemSellStatus") String itemSellStatus,
+            @Param("itemsPerPage") int itemsPerPage,
+            @Param("offset") int offset
+    );
 	
 	@Query(
 		value=

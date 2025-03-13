@@ -25,7 +25,7 @@ public class ItemListItem {
 	private LocalDateTime regTime;
 	private LocalDateTime updateTime;
 	private String writerEmail;
-	private String thumbnailUrl; // 메인 썸네일이미지
+	private String thumbnailUrl; // ✅ 메인 썸네일이미지
 	
 	public ItemListItem(ItemEntity itemListEntity) {
 		this.itemId = itemListEntity.getItemId();
@@ -48,5 +48,5 @@ public class ItemListItem {
 		}
 		return list;
 	}
-
+	
 }

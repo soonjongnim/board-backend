@@ -1,9 +1,6 @@
 package com.soon.board.entity;
 
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,11 +18,9 @@ import com.soon.board.dto.request.item.PatchItemRequestDto;
 import com.soon.board.dto.request.item.PostItemRequestDto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
 @Data
 @AllArgsConstructor
@@ -96,5 +91,27 @@ public class ItemEntity {
         this.itemSellStatus = dto.getItemSellStatus();
         this.updateTime = LocalDateTime.now();
 		this.writerEmail = email;
+    }
+	
+	public ItemEntity(int itemId, String itemName, ItemSellStatus itemSellStatus, int price, LocalDateTime regTime, int stockNumber,
+    		LocalDateTime updateTime, String writerEmail, String itemDetail) {
+//    	System.out.println("intValue: " + itemId);
+//    	System.out.println("string: " + itemName);
+//    	System.out.println("string2: " + itemSellStatus);
+//    	System.out.println("intValue2: " + price);
+//    	System.out.println("object: " + regTime);
+//    	System.out.println("intValue3: " + stockNumber);
+//    	System.out.println("localDateTime: " + updateTime);
+//    	System.out.println("string3: " + writerEmail);
+//    	System.out.println("string4: " + itemDetail);
+    	this.itemId = itemId;
+    	this.itemName = itemName;
+    	this.price = price;
+    	this.stockNumber = stockNumber;
+    	this.itemDetail = itemDetail;
+    	this.itemSellStatus = itemSellStatus;
+    	this.regTime = regTime;
+    	this.updateTime = updateTime;
+    	this.writerEmail = writerEmail;
     }
 }

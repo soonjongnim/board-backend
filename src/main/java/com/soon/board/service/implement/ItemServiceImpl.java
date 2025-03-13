@@ -1,5 +1,6 @@
 package com.soon.board.service.implement;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,17 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-import org.apache.commons.fileupload.disk.DiskFileItem;
-import org.apache.commons.io.IOUtils;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-
-import com.soon.board.dto.ThumbnailFileDto;
+import com.soon.board.constant.ItemSellStatus;
 import com.soon.board.dto.request.item.PatchItemRequestDto;
 import com.soon.board.dto.request.item.PostItemRequestDto;
 import com.soon.board.dto.request.item.SearchItemRequestDto;
@@ -116,11 +108,11 @@ public class ItemServiceImpl implements ItemService {
 	
 	@Override
 	public ResponseEntity<? super GetItemListResponseDto> getItemList() {
-		
 		List<ItemEntity> itemListEntities = new ArrayList<>();
 		
 		try {
 			itemListEntities = itemRepository.findItemsWithFirstThumbnailOrderedByRegTimeDesc();
+			System.out.println("getItemList itemListEntities: " + itemListEntities);
 		} catch (Exception exception) {
 			exception.printStackTrace();
 			return ResponseDto.databaseError();
@@ -130,26 +122,63 @@ public class ItemServiceImpl implements ItemService {
 	
 	@Override
 	public ResponseEntity<? super GetSearchItemListResponseDto> getSearchItemList(SearchItemRequestDto searchParams) {
+		List<Object[]> result = new ArrayList<>();
 		List<ItemEntity> itemListEntities = new ArrayList<>();
+		int totalCount = 0; // ✅ total_count 저장할 변수
 		
 		try {
 			SearchItemRequestDto requestDto = new SearchItemRequestDto(searchParams);
 			System.out.println("requestDto: " + requestDto);
-			itemListEntities = itemRepository.getSearchItemList(requestDto);
-//			itemListEntities = itemRepository.getSearchItemList(requestDto);
-//			itemListEntities = itemRepository.getSearchItemList(
-////					requestDto.getItemIds(),
-//					requestDto.getSearchDateType(),
-//					requestDto.getItemName(),
-////					requestDto.getStartDate(),
-////					requestDto.getEndDate(),
-//					requestDto.getItemSellStatus()
-//					);
+			int itemsPerPage = (requestDto.getItemsPerPage() == null) ? 5 : Integer.parseInt(requestDto.getItemsPerPage());
+		    int page = (requestDto.getPage() == null) ? 1 : Integer.parseInt(requestDto.getPage());
+		    int offset = (page - 1) * itemsPerPage; // OFFSET 계산
+			result = itemRepository.getSearchItemList(
+					requestDto.getSearchBy(),
+					requestDto.getSearchQuery(),
+	                requestDto.getStartDate() != null ? requestDto.getStartDate() : null,
+	                requestDto.getEndDate() != null ? requestDto.getEndDate() : null,
+	                requestDto.getItemSellStatus(),
+	                itemsPerPage, 
+	                offset
+			);
+
+	        for (Object[] row : result) {
+	        	ItemSellStatus status = null;
+	        	if (row[2] != null) {
+	        	    try {
+	        	        status = ItemSellStatus.valueOf((String) row[2]); // ✅ String → Enum 변환
+	        	    } catch (IllegalArgumentException e) {
+	        	        status = ItemSellStatus.NOT_SALE;  // NULL경우 기본값 설정 (예: NOT_SALE)
+	        	    }
+	        	}
+	        	
+	        	ItemEntity dto = new ItemEntity(
+	        			((Number) row[0]).intValue(),  // itemId 
+	        		    (String) row[1],               // itemName
+	        		    status,               			// itemSellStatus
+	        		    ((Number) row[3]).intValue(),  // price 
+	        		    row[4] != null ? ((Timestamp) row[4]).toLocalDateTime() : null, // regTime
+	        		    ((Number) row[5]).intValue(),  // stockNumber 
+	        		    row[6] != null ? ((Timestamp) row[6]).toLocalDateTime() : null, // updateTime
+	        		    (String) row[7],               // writerEmail
+	        		    (String) row[8]                // itemDetail
+	        	    );
+	        	itemListEntities.add(dto);
+	        	
+	            // ✅ total_count는 모든 행에서 동일하므로 첫 번째 행에서만 가져오기
+	        	if (result != null && !result.isEmpty()) {
+	        	    totalCount = ((Number) result.get(0)[9]).intValue();  // ✅ total_count 컬럼 값
+	        	} else {
+	        	    totalCount = 0;
+	        	}
+	        }
+	        System.out.println("itemListEntities: " + itemListEntities);
+	        System.out.println("totalCount: " + totalCount);
 		} catch (Exception exception) {
 			exception.printStackTrace();
 			return ResponseDto.databaseError();
 		}
-		return GetSearchItemListResponseDto.success(itemListEntities);
+		return GetSearchItemListResponseDto.success(itemListEntities, totalCount);
 	}
 
 	@Override

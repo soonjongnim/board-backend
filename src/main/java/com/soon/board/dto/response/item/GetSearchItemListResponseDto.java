@@ -17,14 +17,16 @@ import lombok.Getter;
 public class GetSearchItemListResponseDto extends ResponseDto {
 
 	private List<ItemListItem> searchList;
+	private int totalCount;
 	
-	private GetSearchItemListResponseDto(List<ItemEntity> itemListEntities) {
+	private GetSearchItemListResponseDto(List<ItemEntity> itemListEntities, int totalCount) {
 		super(ResponseCode.SUCCESS, ResponseMessage.SUCCESS);
 		this.searchList = ItemListItem.getList(itemListEntities);
+		this.totalCount = totalCount;
 	}
 	
-	public static ResponseEntity<GetSearchItemListResponseDto> success(List<ItemEntity> itemListEntities) {
-		GetSearchItemListResponseDto result = new GetSearchItemListResponseDto(itemListEntities);
+	public static ResponseEntity<GetSearchItemListResponseDto> success(List<ItemEntity> itemListEntities, int totalCount) {
+		GetSearchItemListResponseDto result = new GetSearchItemListResponseDto(itemListEntities, totalCount);
 		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
 
